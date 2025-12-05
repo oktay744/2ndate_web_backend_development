@@ -17,7 +17,7 @@ app.use(cookieParser());
 app.use(cors({
   origin: [
     "http://localhost:3000",
-    "https://2ndate.co", 
+    "https://2ndate.co",
     "https://www.2ndate.co"
   ],
   credentials: true
