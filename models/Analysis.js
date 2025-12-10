@@ -8,10 +8,14 @@ const analysisSchema = new mongoose.Schema(
       required: true,
       unique: true
     },
-     answers: {
+    answers: {
       type: Map,
       of: String,
       required: true,
+    },
+    profile: {
+      type: Object,
+      required: true
     }
   },
   { timestamps: true }

@@ -63,8 +63,7 @@ export const signup = async (req, res) => {
       token,
       user: {
         id: newUser._id,
-        email: newUser.email,
-        singlePremium: newUser.singlePremium
+        email: newUser.email
       },
     });
 
@@ -123,8 +122,7 @@ export const login = async (req, res) => {
       token,
       user: {
         id: user._id,
-        email: user.email,
-        singlePremium: user.singlePremium
+        email: user.email
       },
     });
 
@@ -174,8 +172,7 @@ export const checkAuth = async (req, res) => {
       success: true,
       user: {
         id: user._id,
-        email: user.email,
-        singlePremium: user.singlePremium
+        email: user.email
       }
     });
 
