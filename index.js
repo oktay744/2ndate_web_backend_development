@@ -4,7 +4,7 @@ import dotenv from 'dotenv';
 import cookieParser from 'cookie-parser';
 import { connectDB } from './lib/db.js';
 import authRoutes from './routes/auth.routes.js';
-import analysisRoutes from './routes/analysis.routes.js'
+import userAnalysisRoutes from './routes/userAnalysis.routes.js';
 
 dotenv.config();
 
@@ -23,7 +23,7 @@ app.use(cors({
 }));
 
 app.use('/api/auth', authRoutes);
-app.use('/api/analysis', analysisRoutes);
+app.use('/api/analysis', userAnalysisRoutes);
 
 const start = async () => {
   try {

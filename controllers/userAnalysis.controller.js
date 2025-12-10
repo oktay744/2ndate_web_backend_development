@@ -1,9 +1,9 @@
-import Analysis from '../models/Analysis.js';
+import UserAnalysis from '../models/UserAnalysis.js';
 
-export const createAnalysis = async (req, res) => {
+export const saveAnalysis = async (req, res) => {
   try {
     const userId = req.userData.id;
-    const { answers } = req.body;
+    const { answers, profile } = req.body;
 
     if (!answers || Object.keys(answers).length === 0) {
       return res.status(400).json({
@@ -12,16 +12,25 @@ export const createAnalysis = async (req, res) => {
       });
     }
 
-    const existing = await Analysis.findOne({ userId });
+    if (!profile) {
+      return res.status(400).json({
+        success: false,
+        message: 'Geçerli analiz profili gereklidir',
+      });
+    }
+
+    const existing = await UserAnalysis.findOne({ userId });
 
     let analysis;
     if (existing) {
       existing.answers = answers;
+      existing.profile = profile;
       analysis = await existing.save();
     } else {
-      analysis = await Analysis.create({
+      analysis = await UserAnalysis.create({
         userId,
         answers,
+        profile,
       });
     }
 
@@ -37,11 +46,11 @@ export const createAnalysis = async (req, res) => {
   }
 };
 
-export const getLatestAnalysis = async (req, res) => {
+export const getAnalysis = async (req, res) => {
   try {
     const userId = req.userData.id;
 
-    const analysis = await Analysis.findOne({ userId })
+    const analysis = await UserAnalysis.findOne({ userId });
 
     if (!analysis) {
       return res.status(404).json({
@@ -53,8 +62,8 @@ export const getLatestAnalysis = async (req, res) => {
     return res.status(200).json({
       success: true,
       analysis: {
-        id: analysis._id,
-        answers: analysis.answers
+        answers: analysis.answers,
+        profile: analysis.profile,
       },
     });
     

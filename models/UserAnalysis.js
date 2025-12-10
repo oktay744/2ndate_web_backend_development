@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 
-const analysisSchema = new mongoose.Schema(
+const userAnalysisSchema = new mongoose.Schema(
   {
     userId: {
       type: mongoose.Schema.Types.ObjectId,
@@ -21,4 +21,4 @@ const analysisSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-export default mongoose.model('Analysis', analysisSchema);
+export default mongoose.model('UserAnalysis', userAnalysisSchema);
