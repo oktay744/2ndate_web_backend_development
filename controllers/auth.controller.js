@@ -172,7 +172,8 @@ export const checkAuth = async (req, res) => {
       success: true,
       user: {
         id: user._id,
-        email: user.email
+        email: user.email,
+        fullName: user.fullName,
       }
     });
 
@@ -180,6 +181,47 @@ export const checkAuth = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: 'Bir hata oluştu'
+    });
+  }
+};
+
+export const updateProfile = async (req, res) => {
+  try {
+    const userId = req.userData.id;
+    const { fullName } = req.body;
+
+    if (!fullName || !fullName.trim()) {
+      return res.status(400).json({
+        success: false,
+        message: 'İsim boş olamaz',
+      });
+    }
+
+    const updated = await User.findByIdAndUpdate(
+      userId,
+      { fullName: fullName },
+      { new: true }
+    );
+
+    if (!updated) {
+      return res.status(404).json({
+        success: false,
+        message: 'Kullanıcı bulunamadı',
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      user: {
+        id: updated._id,
+        email: updated.email,
+        fullName: updated.fullName,
+      },
+    });
+  } catch (err) {
+    return res.status(500).json({
+      success: false,
+      message: 'Profil güncellenemedi',
     });
   }
 };

@@ -2,20 +2,14 @@ import mongoose from 'mongoose';
 
 const coupleAnalysisSchema = new mongoose.Schema(
   {
-    UserId: {
+    userId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
       required: true,
     },
-    userName: {
-      type: String,
-      required: true,
-      trim: true,
-    },
     partnerName: {
       type: String,
-      default: null,
-      trim: true,
+      default: null
     },
     inviteKey: {
       type: String,
