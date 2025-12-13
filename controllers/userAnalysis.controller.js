@@ -3,7 +3,7 @@ import UserAnalysis from '../models/UserAnalysis.js';
 export const saveAnalysis = async (req, res) => {
   try {
     const userId = req.userData.id;
-    const { answers, profile } = req.body;
+    const { answers } = req.body;
 
     if (!answers || Object.keys(answers).length === 0) {
       return res.status(400).json({
@@ -12,25 +12,16 @@ export const saveAnalysis = async (req, res) => {
       });
     }
 
-    if (!profile) {
-      return res.status(400).json({
-        success: false,
-        message: 'Geçerli analiz profili gereklidir',
-      });
-    }
-
     const existing = await UserAnalysis.findOne({ userId });
 
     let analysis;
     if (existing) {
       existing.answers = answers;
-      existing.profile = profile;
       analysis = await existing.save();
     } else {
       analysis = await UserAnalysis.create({
         userId,
         answers,
-        profile,
       });
     }
 
@@ -63,10 +54,9 @@ export const getAnalysis = async (req, res) => {
       success: true,
       analysis: {
         answers: analysis.answers,
-        profile: analysis.profile,
       },
     });
-    
+
   } catch (err) {
     return res.status(500).json({
       success: false,

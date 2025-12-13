@@ -9,6 +9,7 @@ const coupleAnalysisSchema = new mongoose.Schema(
     },
     partnerName: {
       type: String,
+      trim: true,
       default: null
     },
     inviteKey: {

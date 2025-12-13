@@ -12,10 +12,6 @@ const userAnalysisSchema = new mongoose.Schema(
       type: Map,
       of: String,
       required: true,
-    },
-    profile: {
-      type: Object,
-      required: true
     }
   },
   { timestamps: true }
