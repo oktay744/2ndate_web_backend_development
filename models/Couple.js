@@ -1,11 +1,16 @@
 import mongoose from 'mongoose';
 
-const coupleAnalysisSchema = new mongoose.Schema(
+const coupleSchema = new mongoose.Schema(
   {
     userId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
       required: true,
+    },
+    userName: {
+      type: String,
+      trim: true,
+      default: null
     },
     partnerName: {
       type: String,
@@ -27,17 +32,13 @@ const coupleAnalysisSchema = new mongoose.Schema(
       of: String,
       default: null,
     },
-    coupleResult: {
-      type: Object,
-      default: null,
-    },
     status: {
       type: String,
       enum: ['pending', 'completed'],
       default: 'pending',
-    },
+    }
   },
   { timestamps: true }
 );
 
-export default mongoose.model('CoupleAnalysis', coupleAnalysisSchema);
+export default mongoose.model('Couple', coupleSchema);

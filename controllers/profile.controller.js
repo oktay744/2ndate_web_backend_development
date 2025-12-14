@@ -1,4 +1,4 @@
-import UserAnalysis from '../models/UserAnalysis.js';
+import Profile from '../models/Profile.js';
 
 export const saveAnalysis = async (req, res) => {
   try {
@@ -12,14 +12,14 @@ export const saveAnalysis = async (req, res) => {
       });
     }
 
-    const existing = await UserAnalysis.findOne({ userId });
+    const existing = await Profile.findOne({ userId });
 
     let analysis;
     if (existing) {
       existing.answers = answers;
       analysis = await existing.save();
     } else {
-      analysis = await UserAnalysis.create({
+      analysis = await Profile.create({
         userId,
         answers,
       });
@@ -41,7 +41,7 @@ export const getAnalysis = async (req, res) => {
   try {
     const userId = req.userData.id;
 
-    const analysis = await UserAnalysis.findOne({ userId });
+    const analysis = await Profile.findOne({ userId });
 
     if (!analysis) {
       return res.status(404).json({

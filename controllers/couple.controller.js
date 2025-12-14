@@ -1,11 +1,12 @@
 import crypto from 'crypto';
-import CoupleAnalysis from '../models/CoupleAnalysis.js';
-import UserAnalysis from '../models/UserAnalysis.js';
+import Couple from '../models/Couple.js';
+import Profile from '../models/Profile.js';
+import User from '../models/User.js';
 
 const generateInviteKey = async () => {
   for (let i = 0; i < 10; i++) {
     const key = crypto.randomBytes(8).toString('base64url');
-    const exists = await CoupleAnalysis.exists({ inviteKey: key });
+    const exists = await Couple.exists({ inviteKey: key });
     if (!exists) return key;
   }
 
@@ -16,20 +17,29 @@ export const createInvite = async (req, res) => {
   try {
     const userId = req.userData.id;
 
-    const userAnalysis = await UserAnalysis.findOne({ userId });
-    if (!userAnalysis) {
+    const profile = await Profile.findOne({ userId });
+    if (!profile) {
       return res.status(400).json({
         success: false,
         message: 'Önce kendi testini tamamlamalısın.',
       });
     }
 
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'Kullanıcı bulunamadı.',
+      });
+    }
+
     const inviteKey = await generateInviteKey();
 
-    const invite = await CoupleAnalysis.create({
+    const invite = await Couple.create({
       userId,
+      userName: user.fullName,
       inviteKey,
-      userAnswers: userAnalysis.answers,
+      userAnswers: profile.answers,
       status: 'pending',
     });
 
@@ -49,7 +59,7 @@ export const createInvite = async (req, res) => {
 export const getInvite = async (req, res) => {
   try {
     const { inviteKey } = req.params;
-    const couple = await CoupleAnalysis.findOne({ inviteKey }).select('status');
+    const couple = await Couple.findOne({ inviteKey }).select('status');
 
     if (!couple) {
       return res.status(404).json({
@@ -73,7 +83,7 @@ export const getInvite = async (req, res) => {
 export const completeInvite = async (req, res) => {
   try {
     const { inviteKey } = req.params;
-    const { partnerName, partnerAnswers, coupleResult } = req.body;
+    const { partnerName, partnerAnswers } = req.body;
 
     if (!partnerAnswers || Object.keys(partnerAnswers).length === 0) {
       return res.status(400).json({
@@ -89,7 +99,7 @@ export const completeInvite = async (req, res) => {
       });
     }
 
-    const couple = await CoupleAnalysis.findOne({ inviteKey });
+    const couple = await Couple.findOne({ inviteKey });
     if (!couple) {
       return res.status(404).json({
         success: false,
@@ -106,9 +116,6 @@ export const completeInvite = async (req, res) => {
 
     couple.partnerName = String(partnerName).trim();
     couple.partnerAnswers = partnerAnswers;
-    if (coupleResult) {
-      couple.coupleResult = coupleResult;
-    }
     couple.status = 'completed';
 
     await couple.save();
@@ -128,7 +135,7 @@ export const completeInvite = async (req, res) => {
 export const getCoupleResult = async (req, res) => {
   try {
     const { inviteKey } = req.params;
-    const couple = await CoupleAnalysis.findOne({ inviteKey }).select('status coupleResult partnerName');
+    const couple = await Couple.findOne({ inviteKey }).select('status userAnswers partnerAnswers userName partnerName');
 
     if (!couple) {
       return res.status(404).json({
@@ -146,7 +153,9 @@ export const getCoupleResult = async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      coupleResult: couple.coupleResult,
+      userAnswers: couple.userAnswers,
+      partnerAnswers: couple.partnerAnswers,
+      userName: couple.userName,
       partnerName: couple.partnerName
     });
   } catch (err) {

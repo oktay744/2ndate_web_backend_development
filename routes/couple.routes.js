@@ -1,5 +1,5 @@
 import express from 'express';
-import { createInvite, getInvite, completeInvite, getCoupleResult } from '../controllers/coupleAnalysis.controller.js';
+import { createInvite, getInvite, completeInvite, getCoupleResult } from '../controllers/couple.controller.js';
 import { verifyToken } from '../middleware/verifyToken.js';
 
 const router = express.Router();
