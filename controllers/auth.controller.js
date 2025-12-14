@@ -143,8 +143,7 @@ export const logout = async (req, res) => {
     });
 
     return res.status(200).json({
-      success: true,
-      message: 'Çıkış yapıldı'
+      success: true
     });
 
   } catch (err) {

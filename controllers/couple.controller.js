@@ -21,7 +21,7 @@ export const createInvite = async (req, res) => {
     if (!profile) {
       return res.status(400).json({
         success: false,
-        message: 'Önce kendi testini tamamlamalısın.',
+        message: 'Önce kendi testini tamamlamalısın',
       });
     }
 
@@ -29,7 +29,14 @@ export const createInvite = async (req, res) => {
     if (!user) {
       return res.status(404).json({
         success: false,
-        message: 'Kullanıcı bulunamadı.',
+        message: 'Kullanıcı bulunamadı',
+      });
+    }
+
+    if (!user.fullName) {
+      return res.status(400).json({
+        success: false,
+        message: 'İsim bilgini girmelisin',
       });
     }
 
@@ -38,8 +45,10 @@ export const createInvite = async (req, res) => {
     const invite = await Couple.create({
       userId,
       userName: user.fullName,
+      partnerName: null,
       inviteKey,
       userAnswers: profile.answers,
+      partnerAnswers: null,
       status: 'pending',
     });
 
@@ -144,19 +153,13 @@ export const getCoupleResult = async (req, res) => {
       });
     }
 
-    if (couple.status !== 'completed') {
-      return res.status(400).json({
-        success: false,
-        message: 'Rapor henüz hazır değil',
-      });
-    }
-
     return res.status(200).json({
       success: true,
+      userName: couple.userName,
+      partnerName: couple.partnerName,
       userAnswers: couple.userAnswers,
       partnerAnswers: couple.partnerAnswers,
-      userName: couple.userName,
-      partnerName: couple.partnerName
+      status: couple.status
     });
   } catch (err) {
     return res.status(500).json({

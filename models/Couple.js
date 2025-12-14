@@ -9,28 +9,26 @@ const coupleSchema = new mongoose.Schema(
     },
     userName: {
       type: String,
-      trim: true,
       default: null
     },
     partnerName: {
       type: String,
-      trim: true,
       default: null
     },
     inviteKey: {
       type: String,
       required: true,
-      unique: true,
+      unique: true
     },
     userAnswers: {
       type: Map,
       of: String,
-      required: true,
+      required: true
     },
     partnerAnswers: {
       type: Map,
       of: String,
-      default: null,
+      default: null
     },
     status: {
       type: String,

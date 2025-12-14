@@ -1,6 +1,6 @@
 import Profile from '../models/Profile.js';
 
-export const saveAnalysis = async (req, res) => {
+export const saveAnswers = async (req, res) => {
   try {
     const userId = req.userData.id;
     const { answers } = req.body;
@@ -14,20 +14,19 @@ export const saveAnalysis = async (req, res) => {
 
     const existing = await Profile.findOne({ userId });
 
-    let analysis;
+    let profile;
     if (existing) {
       existing.answers = answers;
-      analysis = await existing.save();
+      profile = await existing.save();
     } else {
-      analysis = await Profile.create({
+      profile = await Profile.create({
         userId,
         answers,
       });
     }
 
     return res.status(200).json({
-      success: true,
-      analysisId: analysis._id,
+      success: true
     });
   } catch (err) {
     return res.status(500).json({
@@ -37,30 +36,28 @@ export const saveAnalysis = async (req, res) => {
   }
 };
 
-export const getAnalysis = async (req, res) => {
+export const getAnswers = async (req, res) => {
   try {
     const userId = req.userData.id;
 
-    const analysis = await Profile.findOne({ userId });
+    const profile = await Profile.findOne({ userId });
 
-    if (!analysis) {
+    if (!profile) {
       return res.status(404).json({
         success: false,
-        message: 'Analiz kaydı bulunamadı',
+        message: 'Profil bulunamadı',
       });
     }
 
     return res.status(200).json({
       success: true,
-      analysis: {
-        answers: analysis.answers,
-      },
+      answers: profile.answers
     });
 
   } catch (err) {
     return res.status(500).json({
       success: false,
-      message: 'Analiz getirilirken bir hata oluştu',
+      message: 'Cevaplar getirilirken bir hata oluştu',
     });
   }
 };
