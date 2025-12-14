@@ -41,7 +41,7 @@ export const signup = async (req, res) => {
     const passwordHash = await bcrypt.hash(password, 10);
 
     const newUser = await User.create({
-      email,
+      email: String(email).trim(),
       password: passwordHash,
     });
 
@@ -199,7 +199,7 @@ export const updateProfile = async (req, res) => {
 
     const updated = await User.findByIdAndUpdate(
       userId,
-      { fullName: fullName },
+      { fullName: fullName.trim() },
       { new: true }
     );
 
@@ -214,7 +214,6 @@ export const updateProfile = async (req, res) => {
       success: true,
       user: {
         id: updated._id,
-        email: updated.email,
         fullName: updated.fullName,
       },
     });
