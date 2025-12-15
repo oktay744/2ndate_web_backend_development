@@ -153,6 +153,13 @@ export const getCoupleResult = async (req, res) => {
       });
     }
 
+    if (couple.status !== 'completed') {
+      return res.status(400).json({
+        success: false,
+        message: 'Partner henüz testi tamamlamadı'
+      });
+    }
+
     return res.status(200).json({
       success: true,
       userName: couple.userName,
