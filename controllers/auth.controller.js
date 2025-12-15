@@ -184,7 +184,7 @@ export const checkAuth = async (req, res) => {
   }
 };
 
-export const updateProfile = async (req, res) => {
+export const updateName = async (req, res) => {
   try {
     const userId = req.userData.id;
     const { fullName } = req.body;
@@ -213,6 +213,7 @@ export const updateProfile = async (req, res) => {
       success: true,
       user: {
         id: updated._id,
+        email: updated.email,
         fullName: updated.fullName,
       },
     });
