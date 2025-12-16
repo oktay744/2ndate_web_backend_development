@@ -40,6 +40,20 @@ export const createInvite = async (req, res) => {
       });
     }
 
+    const existingInvite = await Couple.findOne({
+      userId,
+      status: 'pending',
+    });
+
+    if (existingInvite) {
+      return res.status(200).json({
+        success: true,
+        inviteKey: existingInvite.inviteKey,
+        status: existingInvite.status,
+        isExisting: true,
+      });
+    }
+
     const inviteKey = await generateInviteKey();
 
     const invite = await Couple.create({
@@ -56,6 +70,7 @@ export const createInvite = async (req, res) => {
       success: true,
       inviteKey,
       status: invite.status,
+      isExisting: false,
     });
   } catch (err) {
     return res.status(500).json({
