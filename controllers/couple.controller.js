@@ -190,3 +190,22 @@ export const getCoupleResult = async (req, res) => {
     });
   }
 };
+
+export const listMyInvites = async (req, res) => {
+  try {
+    const userId = req.userData.id;
+    const invites = await Couple.find({ userId })
+      .sort({ createdAt: -1 })
+      .select('inviteKey status partnerName userName createdAt');
+
+    return res.status(200).json({
+      success: true,
+      invites,
+    });
+  } catch (err) {
+    return res.status(500).json({
+      success: false,
+      message: 'Davetler alınırken bir hata oluştu.',
+    });
+  }
+};
