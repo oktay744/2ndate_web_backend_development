@@ -175,12 +175,21 @@ export const getCoupleResult = async (req, res) => {
       });
     }
 
+    // MongoDB Map'leri plain object'e çevir
+    const userAnswersObj = couple.userAnswers instanceof Map
+      ? Object.fromEntries(couple.userAnswers)
+      : couple.userAnswers;
+
+    const partnerAnswersObj = couple.partnerAnswers instanceof Map
+      ? Object.fromEntries(couple.partnerAnswers)
+      : couple.partnerAnswers;
+
     return res.status(200).json({
       success: true,
       userName: couple.userName,
       partnerName: couple.partnerName,
-      userAnswers: couple.userAnswers,
-      partnerAnswers: couple.partnerAnswers,
+      userAnswers: userAnswersObj,
+      partnerAnswers: partnerAnswersObj,
       status: couple.status
     });
   } catch (err) {
@@ -191,7 +200,7 @@ export const getCoupleResult = async (req, res) => {
   }
 };
 
-export const listMyInvites = async (req, res) => {
+export const getMyInvites = async (req, res) => {
   try {
     const userId = req.userData.id;
     const invites = await Couple.find({ userId })
