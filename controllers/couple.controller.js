@@ -1,6 +1,6 @@
 import crypto from 'crypto';
 import Couple from '../models/Couple.js';
-import Profile from '../models/Profile.js';
+import Answers from '../models/Answers.js';
 import User from '../models/User.js';
 
 const generateInviteKey = async () => {
@@ -17,8 +17,8 @@ export const createInvite = async (req, res) => {
   try {
     const userId = req.userData.id;
 
-    const profile = await Profile.findOne({ userId });
-    if (!profile) {
+    const record = await Answers.findOne({ userId });
+    if (!record) {
       return res.status(400).json({
         success: false,
         message: 'Önce kendi testini tamamlamalısın',
@@ -61,7 +61,7 @@ export const createInvite = async (req, res) => {
       userName: user.fullName,
       partnerName: null,
       inviteKey,
-      userAnswers: profile.answers,
+      userAnswers: record.answers,
       partnerAnswers: null,
       status: 'pending',
     });
@@ -175,21 +175,12 @@ export const getCoupleResult = async (req, res) => {
       });
     }
 
-    // MongoDB Map'leri plain object'e çevir
-    const userAnswersObj = couple.userAnswers instanceof Map
-      ? Object.fromEntries(couple.userAnswers)
-      : couple.userAnswers;
-
-    const partnerAnswersObj = couple.partnerAnswers instanceof Map
-      ? Object.fromEntries(couple.partnerAnswers)
-      : couple.partnerAnswers;
-
     return res.status(200).json({
       success: true,
       userName: couple.userName,
       partnerName: couple.partnerName,
-      userAnswers: userAnswersObj,
-      partnerAnswers: partnerAnswersObj,
+      userAnswers: couple.userAnswers,
+      partnerAnswers: couple.partnerAnswers,
       status: couple.status
     });
   } catch (err) {

@@ -7,6 +7,11 @@ const coupleSchema = new mongoose.Schema(
       ref: 'User',
       required: true,
     },
+    partnerId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      default: null
+    },
     userName: {
       type: String,
       default: null
@@ -21,14 +26,12 @@ const coupleSchema = new mongoose.Schema(
       unique: true
     },
     userAnswers: {
-      type: Map,
-      of: String,
-      required: true
+      type: Object,
+      default: null,
     },
     partnerAnswers: {
-      type: Map,
-      of: String,
-      default: null
+      type: Object,
+      default: null,
     },
     status: {
       type: String,

@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 
-const profileSchema = new mongoose.Schema(
+const answersSchema = new mongoose.Schema(
   {
     userId: {
       type: mongoose.Schema.Types.ObjectId,
@@ -9,12 +9,11 @@ const profileSchema = new mongoose.Schema(
       unique: true
     },
     answers: {
-      type: Map,
-      of: String,
+      type: Object,
       required: true,
     }
   },
   { timestamps: true }
 );
 
-export default mongoose.model('Profile', profileSchema);
+export default mongoose.model('Answers', answersSchema);

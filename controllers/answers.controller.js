@@ -1,4 +1,4 @@
-import Profile from '../models/Profile.js';
+import Answers from '../models/Answers.js';
 
 export const saveAnswers = async (req, res) => {
   try {
@@ -12,18 +12,11 @@ export const saveAnswers = async (req, res) => {
       });
     }
 
-    const existing = await Profile.findOne({ userId });
-
-    let profile;
-    if (existing) {
-      existing.answers = answers;
-      profile = await existing.save();
-    } else {
-      profile = await Profile.create({
-        userId,
-        answers,
-      });
-    }
+    await Answers.findOneAndUpdate(
+      { userId },
+      { answers },
+      { upsert: true }
+    );
 
     return res.status(200).json({
       success: true
@@ -40,18 +33,18 @@ export const getAnswers = async (req, res) => {
   try {
     const userId = req.userData.id;
 
-    const profile = await Profile.findOne({ userId });
+    const savedAnswers = await Answers.findOne({ userId });
 
-    if (!profile) {
+    if (!savedAnswers) {
       return res.status(404).json({
         success: false,
-        message: 'Profil bulunamadı',
+        message: 'Cevaplar bulunamadı',
       });
     }
 
     return res.status(200).json({
       success: true,
-      answers: profile.answers
+      answers: savedAnswers.answers
     });
 
   } catch (err) {
