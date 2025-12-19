@@ -41,7 +41,7 @@ export const createInvite = async (req, res) => {
     }
 
     const existingInvite = await Couple.findOne({
-      userId,
+      firstPersonId: userId,
       status: 'pending',
     });
 
@@ -49,19 +49,17 @@ export const createInvite = async (req, res) => {
       return res.status(200).json({
         success: true,
         inviteKey: existingInvite.inviteKey,
-        status: existingInvite.status,
-        isExisting: true,
+        status: existingInvite.status
       });
     }
 
     const inviteKey = await generateInviteKey();
 
     const invite = await Couple.create({
-      userId,
-      userName: user.fullName,
+      firstPersonId: userId,
+      secondPersonId: null,
       partnerName: null,
       inviteKey,
-      userAnswers: record.answers,
       partnerAnswers: null,
       status: 'pending',
     });
@@ -69,8 +67,7 @@ export const createInvite = async (req, res) => {
     return res.status(201).json({
       success: true,
       inviteKey,
-      status: invite.status,
-      isExisting: false,
+      status: invite.status
     });
   } catch (err) {
     return res.status(500).json({
@@ -159,7 +156,9 @@ export const completeInvite = async (req, res) => {
 export const getCoupleResult = async (req, res) => {
   try {
     const { inviteKey } = req.params;
-    const couple = await Couple.findOne({ inviteKey }).select('status userAnswers partnerAnswers userName partnerName');
+    const couple = await Couple.findOne({ inviteKey })
+      .populate('firstPersonId', 'fullName')
+      .populate('secondPersonId', 'fullName');
 
     if (!couple) {
       return res.status(404).json({
@@ -175,18 +174,34 @@ export const getCoupleResult = async (req, res) => {
       });
     }
 
+    const firstAnswersDoc = await Answers.findOne({ userId: couple.firstPersonId._id });
+    if (!firstAnswersDoc) {
+      return res.status(404).json({
+        success: false,
+        message: 'Kullanıcı cevapları bulunamadı',
+      });
+    }
+
+    let secondPersonAnswers;
+    if (couple.secondPersonId) {
+      const secondAnswersDoc = await Answers.findOne({ userId: couple.secondPersonId._id });
+      secondPersonAnswers = secondAnswersDoc?.answers || couple.partnerAnswers;
+    } else {
+      secondPersonAnswers = couple.partnerAnswers;
+    }
+
     return res.status(200).json({
       success: true,
-      userName: couple.userName,
-      partnerName: couple.partnerName,
-      userAnswers: couple.userAnswers,
-      partnerAnswers: couple.partnerAnswers,
+      firstPersonName: couple.firstPersonId.fullName,
+      secondPersonName: couple.secondPersonId?.fullName || couple.partnerName,
+      firstPersonAnswers: firstAnswersDoc.answers,
+      secondPersonAnswers: secondPersonAnswers,
       status: couple.status
     });
   } catch (err) {
     return res.status(500).json({
       success: false,
-      message: 'Rapor getirilirken bir hata oluştu.',
+      message: 'Analiz getirilirken bir hata oluştu.',
     });
   }
 };
@@ -194,9 +209,16 @@ export const getCoupleResult = async (req, res) => {
 export const getMyInvites = async (req, res) => {
   try {
     const userId = req.userData.id;
-    const invites = await Couple.find({ userId })
+    const invites = await Couple.find({
+      $or: [
+        { firstPersonId: userId },
+        { secondPersonId: userId }
+      ]
+    })
+      .populate('firstPersonId', 'fullName')
+      .populate('secondPersonId', 'fullName')
       .sort({ createdAt: -1 })
-      .select('inviteKey status partnerName userName createdAt');
+      .select('-partnerAnswers');
 
     return res.status(200).json({
       success: true,
@@ -206,6 +228,75 @@ export const getMyInvites = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: 'Davetler alınırken bir hata oluştu.',
+    });
+  }
+};
+
+export const linkCoupleAccount = async (req, res) => {
+  try {
+    const userId = req.userData.id;
+    const { inviteKey } = req.body;
+
+    if (!inviteKey) {
+      return res.status(400).json({
+        success: false,
+        message: 'Davet anahtarı gerekli',
+      });
+    }
+
+    // Check if user has completed their own quiz
+    const userAnswers = await Answers.findOne({ userId });
+    if (!userAnswers) {
+      return res.status(400).json({
+        success: false,
+        message: 'Önce kendi testini tamamlamalısın',
+      });
+    }
+
+    // Get user's name
+    const user = await User.findById(userId);
+    if (!user || !user.fullName) {
+      return res.status(400).json({
+        success: false,
+        message: 'İsim bilgini girmelisin',
+      });
+    }
+
+    // Find the invite
+    const couple = await Couple.findOne({
+      inviteKey,
+      secondPersonId: null
+    });
+
+    if (!couple) {
+      return res.status(404).json({
+        success: false,
+        message: 'Bağlanabilecek davet bulunamadı',
+      });
+    }
+
+    // Check if user is trying to link to their own invite
+    if (couple.firstPersonId.toString() === userId) {
+      return res.status(400).json({
+        success: false,
+        message: 'Kendi davetine bağlanamazsın',
+      });
+    }
+
+    // Update the couple record
+    couple.secondPersonId = userId;
+    couple.status = 'completed';
+
+    await couple.save();
+
+    return res.status(200).json({
+      success: true,
+      inviteKey: couple.inviteKey
+    });
+  } catch (err) {
+    return res.status(500).json({
+      success: false,
+      message: 'Hesap bağlanırken bir hata oluştu.',
     });
   }
 };

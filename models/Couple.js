@@ -2,12 +2,12 @@ import mongoose from 'mongoose';
 
 const coupleSchema = new mongoose.Schema(
   {
-    userId: {
+    firstPersonId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
       required: true,
     },
-    partnerId: {
+    secondPersonId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
       default: null

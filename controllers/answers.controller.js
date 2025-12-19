@@ -33,9 +33,9 @@ export const getAnswers = async (req, res) => {
   try {
     const userId = req.userData.id;
 
-    const savedAnswers = await Answers.findOne({ userId });
+    const record = await Answers.findOne({ userId });
 
-    if (!savedAnswers) {
+    if (!record) {
       return res.status(404).json({
         success: false,
         message: 'Cevaplar bulunamadı',
@@ -44,7 +44,7 @@ export const getAnswers = async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      answers: savedAnswers.answers
+      answers: record.answers
     });
 
   } catch (err) {
