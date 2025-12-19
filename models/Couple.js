@@ -12,10 +12,6 @@ const coupleSchema = new mongoose.Schema(
       ref: 'User',
       default: null
     },
-    userName: {
-      type: String,
-      default: null
-    },
     partnerName: {
       type: String,
       default: null
@@ -24,10 +20,6 @@ const coupleSchema = new mongoose.Schema(
       type: String,
       required: true,
       unique: true
-    },
-    userAnswers: {
-      type: Object,
-      default: null,
     },
     partnerAnswers: {
       type: Object,
