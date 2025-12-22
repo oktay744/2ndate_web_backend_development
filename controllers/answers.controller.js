@@ -15,7 +15,7 @@ export const saveAnswers = async (req, res) => {
     await Answers.findOneAndUpdate(
       { userId },
       { answers },
-      { upsert: true, new: true  }
+      { upsert: true, new: true }
     );
 
     return res.status(200).json({

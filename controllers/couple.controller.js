@@ -5,12 +5,12 @@ import User from '../models/User.js';
 
 const generateInviteKey = async () => {
   for (let i = 0; i < 10; i++) {
-    const key = crypto.randomBytes(8).toString('base64url');
+    const key = crypto.randomBytes(4).toString('base64url');
     const exists = await Couple.exists({ inviteKey: key });
     if (!exists) return key;
   }
 
-  return crypto.randomBytes(12).toString('base64url');
+  return crypto.randomBytes(6).toString('base64url');
 };
 
 export const createInvite = async (req, res) => {
