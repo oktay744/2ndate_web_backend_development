@@ -174,6 +174,14 @@ export const getCoupleResult = async (req, res) => {
       });
     }
 
+    // Check if first person still exists
+    if (!couple.firstPersonId) {
+      return res.status(404).json({
+        success: false,
+        message: 'Davet sahibi bulunamadı',
+      });
+    }
+
     const firstAnswersDoc = await Answers.findOne({ userId: couple.firstPersonId._id });
     if (!firstAnswersDoc) {
       return res.status(404).json({
