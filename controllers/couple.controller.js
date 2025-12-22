@@ -174,7 +174,6 @@ export const getCoupleResult = async (req, res) => {
       });
     }
 
-    // Check if first person still exists
     if (!couple.firstPersonId) {
       return res.status(404).json({
         success: false,
@@ -230,7 +229,7 @@ export const getMyInvites = async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      invites,
+      invites
     });
   } catch (err) {
     return res.status(500).json({
@@ -260,14 +259,6 @@ export const linkCoupleAccount = async (req, res) => {
       });
     }
 
-    const user = await User.findById(userId);
-    if (!user || !user.fullName) {
-      return res.status(400).json({
-        success: false,
-        message: 'İsim bilgini girmelisin',
-      });
-    }
-
     const couple = await Couple.findOne({
       inviteKey,
       secondPersonId: null
@@ -285,6 +276,26 @@ export const linkCoupleAccount = async (req, res) => {
         success: false,
         message: 'Kendi davetine bağlanamazsın',
       });
+    }
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'Kullanıcı bulunamadı',
+      });
+    }
+
+    if (!user.fullName) {
+      if (couple.partnerName) {
+        user.fullName = couple.partnerName;
+        await user.save();
+      } else {
+        return res.status(400).json({
+          success: false,
+          message: 'İsim bilgini girmelisin',
+        });
+      }
     }
 
     couple.secondPersonId = userId;
