@@ -244,7 +244,6 @@ export const linkCoupleAccount = async (req, res) => {
       });
     }
 
-    // Check if user has completed their own quiz
     const userAnswers = await Answers.findOne({ userId });
     if (!userAnswers) {
       return res.status(400).json({
@@ -253,7 +252,6 @@ export const linkCoupleAccount = async (req, res) => {
       });
     }
 
-    // Get user's name
     const user = await User.findById(userId);
     if (!user || !user.fullName) {
       return res.status(400).json({
@@ -262,7 +260,6 @@ export const linkCoupleAccount = async (req, res) => {
       });
     }
 
-    // Find the invite
     const couple = await Couple.findOne({
       inviteKey,
       secondPersonId: null
@@ -275,7 +272,6 @@ export const linkCoupleAccount = async (req, res) => {
       });
     }
 
-    // Check if user is trying to link to their own invite
     if (couple.firstPersonId.toString() === userId) {
       return res.status(400).json({
         success: false,
@@ -283,7 +279,6 @@ export const linkCoupleAccount = async (req, res) => {
       });
     }
 
-    // Update the couple record
     couple.secondPersonId = userId;
     couple.status = 'completed';
 
