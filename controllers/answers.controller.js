@@ -22,6 +22,7 @@ export const saveAnswers = async (req, res) => {
       success: true
     });
   } catch (err) {
+    console.error('SaveAnswers error:', err);
     return res.status(500).json({
       success: false,
       message: 'Cevaplarınız kaydedilirken hata oluştu',
@@ -48,6 +49,7 @@ export const getAnswers = async (req, res) => {
     });
 
   } catch (err) {
+    console.error('GetAnswers error:', err);
     return res.status(500).json({
       success: false,
       message: 'Cevaplar getirilirken bir hata oluştu',

@@ -70,6 +70,7 @@ export const createInvite = async (req, res) => {
       status: invite.status
     });
   } catch (err) {
+    console.error('CreateInvite error:', err);
     return res.status(500).json({
       success: false,
       message: 'Davet oluşturulurken bir hata oluştu.',
@@ -94,6 +95,7 @@ export const getInvite = async (req, res) => {
       status: couple.status
     });
   } catch (err) {
+    console.error('GetInvite error:', err);
     return res.status(500).json({
       success: false,
       message: 'Davet bilgisi alınırken bir hata oluştu.',
@@ -146,6 +148,7 @@ export const completeInvite = async (req, res) => {
       status: couple.status,
     });
   } catch (err) {
+    console.error('CompleteInvite error:', err);
     return res.status(500).json({
       success: false,
       message: 'Davet tamamlanırken bir hata oluştu.',
@@ -206,6 +209,7 @@ export const getCoupleResult = async (req, res) => {
       status: couple.status
     });
   } catch (err) {
+    console.error('GetCoupleResult error:', err);
     return res.status(500).json({
       success: false,
       message: 'Analiz getirilirken bir hata oluştu.',
@@ -232,6 +236,7 @@ export const getMyInvites = async (req, res) => {
       invites
     });
   } catch (err) {
+    console.error('GetMyInvites error:', err);
     return res.status(500).json({
       success: false,
       message: 'Davetler alınırken bir hata oluştu.',
@@ -308,6 +313,7 @@ export const linkCoupleAccount = async (req, res) => {
       inviteKey: couple.inviteKey
     });
   } catch (err) {
+    console.error('LinkCoupleAccount error:', err);
     return res.status(500).json({
       success: false,
       message: 'Hesap bağlanırken bir hata oluştu.',

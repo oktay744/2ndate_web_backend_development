@@ -68,6 +68,7 @@ export const signup = async (req, res) => {
     });
 
   } catch (err) {
+    console.error('Signup error:', err);
     return res.status(500).json({
       success: false,
       message: 'Kayıt işlemi sırasında bir hata oluştu.'
@@ -127,6 +128,7 @@ export const login = async (req, res) => {
     });
 
   } catch (err) {
+    console.error('Login error:', err);
     return res.status(500).json({
       success: false,
       message: 'Giriş işlemi sırasında bir hata oluştu.'
@@ -147,6 +149,7 @@ export const logout = async (req, res) => {
     });
 
   } catch (err) {
+    console.error('Logout error:', err);
     return res.status(500).json({
       success: false,
       message: 'Çıkış işlemi sırasında bir hata oluştu.'
@@ -177,6 +180,7 @@ export const checkAuth = async (req, res) => {
     });
 
   } catch (err) {
+    console.error('CheckAuth error:', err);
     return res.status(500).json({
       success: false,
       message: 'Bir hata oluştu'
@@ -218,6 +222,7 @@ export const updateName = async (req, res) => {
       },
     });
   } catch (err) {
+    console.error('UpdateName error:', err);
     return res.status(500).json({
       success: false,
       message: 'Profil güncellenemedi',
