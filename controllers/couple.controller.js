@@ -81,7 +81,7 @@ export const createInvite = async (req, res) => {
 export const getInvite = async (req, res) => {
   try {
     const { inviteKey } = req.params;
-    const couple = await Couple.findOne({ inviteKey }).select('status');
+    const couple = await Couple.findOne({ inviteKey }).select('status firstPersonId');
 
     if (!couple) {
       return res.status(404).json({
@@ -92,7 +92,8 @@ export const getInvite = async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      status: couple.status
+      status: couple.status,
+      firstPersonId: couple.firstPersonId || null
     });
   } catch (err) {
     console.error('GetInvite error:', err);
