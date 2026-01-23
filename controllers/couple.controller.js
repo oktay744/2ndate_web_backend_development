@@ -259,14 +259,6 @@ export const linkCoupleAccount = async (req, res) => {
       });
     }
 
-    const userAnswers = await Answers.findOne({ userId });
-    if (!userAnswers) {
-      return res.status(400).json({
-        success: false,
-        message: 'Önce kendi testini tamamlamalısın',
-      });
-    }
-
     const couple = await Couple.findOne({
       inviteKey,
       secondPersonId: null
@@ -276,6 +268,22 @@ export const linkCoupleAccount = async (req, res) => {
       return res.status(404).json({
         success: false,
         message: 'Bağlanabilecek davet bulunamadı',
+      });
+    }
+
+    let userAnswers = await Answers.findOne({ userId });
+
+    if (!userAnswers && couple.partnerAnswers) {
+      userAnswers = await Answers.create({
+        userId: userId,
+        answers: couple.partnerAnswers
+      });
+    }
+
+    if (!userAnswers) {
+      return res.status(400).json({
+        success: false,
+        message: 'Önce kendi testini tamamlamalısın',
       });
     }
 
